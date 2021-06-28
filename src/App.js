@@ -8,6 +8,9 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [blogTitle, setBlogTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -29,12 +32,15 @@ const App = () => {
 
       if (user.status === 200) {
         setUser(user.data)
+        setUsername('')
+        setPassword('')
+        blogService.setToken(user.data.token)
       }
 
       window.localStorage.setItem('loggedBlogListUser', JSON.stringify(user.data))
     } catch (error) {
       console.error(error)
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         alert('Wrong username or password')
       }
     }
@@ -45,23 +51,34 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogListUser')
   }
 
+  const createBlog = () => {
+    const response = blogService.create({
+      title: blogTitle,
+      author: author,
+      url: url
+    })
+  }
+
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
-      <form onSubmit={event => { event.preventDefault(); login(username, password) }} >
+      <form onSubmit={ event => {
+        event.preventDefault()
+        login(username, password)
+      }} >
         username
         <input
-          type="test"
+          type="text"
           value={username}
-          onChange={event => setUsername(event.target.value)} />
+          onChange={ event => setUsername(event.target.value) } />
         <br />
         password
         <input
           type="password"
           value={password}
-          onChange={event => setPassword(event.target.value)} />
+          onChange={ event => setPassword(event.target.value) } />
         <br />
-        <input type="submit" />
+        <input type="submit" value="login" />
       </form>
     </div>
   )
@@ -70,6 +87,28 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <div>{user.name} logged in<button onClick={logout}>logout</button></div><br />
+      <h2>create new</h2>
+      <form onSubmit={ event => {
+        event.preventDefault()
+        createBlog()
+      } }>
+        title:
+        <input
+          type="text"
+          value={blogTitle}
+          onChange={ event => setBlogTitle(event.target.value) } /><br />
+        author:
+        <input
+          type="text"
+          value={author}
+          onChange={ event => setAuthor(event.target.value) } /><br />
+        url:
+        <input
+          type="text"
+          value={url}
+          onChange={ event => setUrl(event.target.value) } /><br />
+        <input type="submit" value="create" />
+      </form>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
