@@ -1,0 +1,14 @@
+.notification {
+  background: #99ff99;
+  border: .2em solid #009900;
+  border-radius: .2em;
+  color: #009900;
+  margin-bottom: 1em;
+  padding: 1em;
+}
+
+.error {
+  background: #ff9999;
+  border-color: #990000;
+  color: #990000;
+}
