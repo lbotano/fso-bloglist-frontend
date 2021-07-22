@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+
+import blogService from '../services/blogs'
+
 const Blog = ({ blog }) => {
   const [show, setShow] = useState(false)
+  const [likes, setLikes] = useState(blog.likes)
   
   const showStyle = { display: show ? '' : 'none' }
   const boxStyle = {
@@ -14,6 +18,14 @@ const Blog = ({ blog }) => {
     setShow(!show)
   }
 
+  const like = () => {
+    try {
+      blogService.like(blog)
+      setLikes(likes + 1)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <div style={boxStyle}>
@@ -23,7 +35,7 @@ const Blog = ({ blog }) => {
       </button>
       <div style={showStyle}>
         {blog.url}<br />
-        likes {blog.likes} <button>like</button><br />
+        likes {likes} <button onClick={like}>like</button><br />
         {blog.user.name}
       </div>
     </div>
