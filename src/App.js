@@ -85,6 +85,15 @@ const App = () => {
     }
   }
 
+  const blogLike = (blog) => {
+    const blogList = blogs.map(val => val.id === blog.id ? blog : val)
+    setBlogs(blogList)
+  }
+
+  const blogRemove = (blog) => {
+    setBlogs(blogs.filter(val => val.id !== blog.id))
+  }
+
   const loginForm = () => (
     <>
       <h2>Log in to application</h2>
@@ -121,7 +130,7 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} user={user} onLike={blogLike} onRemove={blogRemove}/>
       )}
     </>
   )

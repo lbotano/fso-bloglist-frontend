@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, user, onLike, onRemove }) => {
   const [show, setShow] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
   
   const showStyle = { display: show ? '' : 'none' }
+  const removeStyle = { display: user.username === blog.user.username ? '' : 'none' }
   const boxStyle = {
     border: '2px solid #000',
     margin: '5px 0',
@@ -21,9 +21,20 @@ const Blog = ({ blog }) => {
   const like = () => {
     try {
       blogService.like(blog)
-      setLikes(likes + 1)
+      onLike(blog)
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  const remove = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        blogService.remove(blog)
+        onRemove(blog)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
@@ -35,8 +46,9 @@ const Blog = ({ blog }) => {
       </button>
       <div style={showStyle}>
         {blog.url}<br />
-        likes {likes} <button onClick={like}>like</button><br />
-        {blog.user.name}
+        likes {blog.likes} <button onClick={like}>like</button><br />
+        {blog.user.name}<br />
+        <button onClick={remove} style={removeStyle}>remove</button>
       </div>
     </div>
   )
