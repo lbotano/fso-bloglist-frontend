@@ -50,9 +50,9 @@ const App = () => {
     } catch (error) {
       console.error(error)
       if (error.response && error.response.status === 401) {
-        notify({text: 'Wrong username or password', error: true})
+        notify({ text: 'Wrong username or password', error: true })
       } else {
-        notify({text: 'Cannot login: server might not be running', error: true})
+        notify({ text: 'Cannot login: server might not be running', error: true })
       }
     }
   }
@@ -79,9 +79,9 @@ const App = () => {
       })
 
       blogFormRef.current.toggleVisibility()
-      notify({text: `a new blog ${blogTitle} by ${author} created`})
+      notify({ text: `a new blog ${blogTitle} by ${author} created` })
     } catch (error) {
-      notify({text: 'error adding blog', error: true})
+      notify({ text: 'error adding blog', error: true })
     }
   }
 

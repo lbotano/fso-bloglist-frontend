@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import blogService from '../services/blogs'
 
 const Blog = ({ blog, user, onLike, onRemove }) => {
   const [show, setShow] = useState(false)
-  
+
   const showStyle = { display: show ? '' : 'none' }
   const removeStyle = { display: user.username === blog.user.username ? '' : 'none' }
   const boxStyle = {
