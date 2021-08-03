@@ -42,4 +42,19 @@ describe('<Blog />', () => {
     const togglableContent = component.container.querySelector('.togglableContent')
     expect(togglableContent).not.toHaveStyle('display: none')
   })
+
+  test('likes twice', () => {
+    const mockLike = jest.fn()
+    const mockRemove = jest.fn()
+    const component = render(
+      <Blog blog={blog} user={user} onLike={mockLike} onRemove={mockRemove} />
+    )
+    const button = component.getByText('like')
+
+    for (let i = 0; i < 2; i++) {
+      fireEvent.click(button)
+    }
+
+    expect(mockLike.mock.calls).toHaveLength(2)
+  })
 })
