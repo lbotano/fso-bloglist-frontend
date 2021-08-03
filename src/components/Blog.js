@@ -44,7 +44,7 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
       <button onClick={toggleShow} style={buttonStyle}>
         {show ? 'hide' : 'view'}
       </button>
-      <div style={showStyle}>
+      <div style={showStyle} className="togglableContent">
         {blog.url}<br />
         likes {blog.likes} <button onClick={like}>like</button><br />
         {blog.user.name}<br />
