@@ -98,7 +98,7 @@ const App = () => {
     <>
       <h2>Log in to application</h2>
       <Notification notification={notification} />
-      <form onSubmit={ event => {
+      <form id="login" onSubmit={ event => {
         event.preventDefault()
         login(username, password)
       }} >
