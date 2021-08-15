@@ -44,11 +44,15 @@ describe('Blog app', function() {
     })
 
     it('A blog can be created', function() {
+      // Create blog
       cy.contains('create new blog').click()
       cy.get('#title').type('New blog')
       cy.get('#author').type('New Author')
       cy.get('#url').type('http://www.example.com/')
       cy.get('#submit').click()
+
+      // Verify that it exists
+      cy.contains('a new blog New blog by New Author created')
     })
   })
 })
