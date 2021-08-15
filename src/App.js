@@ -104,17 +104,19 @@ const App = () => {
       }} >
         username
         <input
+          id="login-username"
           type="text"
           value={username}
           onChange={ event => setUsername(event.target.value) } />
         <br />
         password
         <input
+          id="login-pass"
           type="password"
           value={password}
           onChange={ event => setPassword(event.target.value) } />
         <br />
-        <input type="submit" value="login" />
+        <input id="login-submit" type="submit" value="login" />
       </form>
     </>
   )
