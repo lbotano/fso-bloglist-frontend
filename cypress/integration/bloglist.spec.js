@@ -74,5 +74,25 @@ describe('Blog app', function() {
       cy.contains('like').click()
       cy.contains('1')
     })
+
+    it('User can delete their blog', function() {
+      let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:3003/api/blogs',
+        headers: {
+          Authorization: `bearer ${token}`
+        },
+        body: {
+          title: 'My blog',
+          author: 'My author',
+          url: 'http://example.com/',
+        }
+      })
+      cy.visit('http://localhost:3000')
+      cy.contains('view').click()
+      cy.contains('remove').click()
+      cy.contains('My blog').should('not.exist')
+    })
   })
 })
