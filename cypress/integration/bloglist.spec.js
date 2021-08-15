@@ -69,6 +69,10 @@ describe('Blog app', function() {
           url: 'http://example.com/',
         }
       })
+      cy.visit('http://localhost:3000')
+      cy.contains('view').click()
+      cy.contains('like').click()
+      cy.contains('1')
     })
   })
 })
