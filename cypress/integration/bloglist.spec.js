@@ -54,5 +54,21 @@ describe('Blog app', function() {
       // Verify that it exists
       cy.contains('a new blog New blog by New Author created')
     })
+
+    it('A blog can be liked', function() {
+      let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:3003/api/blogs',
+        headers: {
+          Authorization: `bearer ${token}`
+        },
+        body: {
+          title: 'New blog',
+          author: 'New author',
+          url: 'http://example.com/',
+        }
+      })
+    })
   })
 })
