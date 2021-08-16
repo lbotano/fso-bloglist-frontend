@@ -46,7 +46,8 @@ const Blog = ({ blog, user, onLike, onRemove }) => {
       </button>
       <div style={showStyle} className="togglableContent">
         {blog.url}<br />
-        likes {blog.likes} <button onClick={like}>like</button><br />
+        likes <span className="likes">{blog.likes}</span>
+        <button onClick={like}>like</button><br />
         {blog.user.name}<br />
         <button onClick={remove} style={removeStyle}>remove</button>
       </div>

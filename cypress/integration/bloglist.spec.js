@@ -1,4 +1,18 @@
+Cypress.Commands.add('createBlog', content => {
+  let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:3003/api/blogs',
+    headers: {
+      Authorization: `bearer ${token}`
+    },
+    body: content
+  })
+  cy.visit('http://localhost:3000')
+})
+
 describe('Blog app', function() {
+
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
     const user = {
@@ -57,19 +71,11 @@ describe('Blog app', function() {
 
     it('A blog can be liked', function() {
       let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
-      cy.request({
-        method: 'POST',
-        url: 'http://localhost:3003/api/blogs',
-        headers: {
-          Authorization: `bearer ${token}`
-        },
-        body: {
-          title: 'New blog',
-          author: 'New author',
-          url: 'http://example.com/',
-        }
+      cy.createBlog({
+        title: 'New blog',
+        author: 'New author',
+        url: 'http://example.com/',
       })
-      cy.visit('http://localhost:3000')
       cy.contains('view').click()
       cy.contains('like').click()
       cy.contains('1')
@@ -77,62 +83,81 @@ describe('Blog app', function() {
 
     it('User can delete their blog', function() {
       let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
-      cy.request({
-        method: 'POST',
-        url: 'http://localhost:3003/api/blogs',
-        headers: {
-          Authorization: `bearer ${token}`
-        },
-        body: {
-          title: 'My blog',
-          author: 'My author',
-          url: 'http://example.com/',
-        }
+      cy.createBlog({
+        title: 'My blog',
+        author: 'My author',
+        url: 'http://example.com/'
       })
-      cy.visit('http://localhost:3000')
       cy.contains('view').click()
       cy.contains('remove').click()
       cy.contains('My blog').should('not.exist')
     })
 
-    it('Blog cannot be deleted by another user', function () {
+    it('Blog cannot be deleted by another user', function() {
       // Create blog with johndoe
       let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
-      cy.request({
-        method: 'POST',
-        url: 'http://localhost:3003/api/blogs',
-        headers: {
-          Authorization: `bearer ${token}`
-        },
-        body: {
-          title: 'My blog',
-          author: 'My author',
-          url: 'http://example.com/',
-        }
-      }).then(() => {
+      cy.createBlog({
+        title: 'My blog',
+        author: 'My author',
+        url: 'http://example.com/'
+      })
 
-        // Create stranger's user
-        const user = {
-          username: 'stranger',
-          name: 'Stranger',
-          password: 'test123'
-        }
-        cy.request('POST', 'http://localhost:3003/api/users/', user)
-          .then(() => {
-            // Login with stranger's user
-            cy.request('POST', 'http://localhost:3003/api/login', {
-              username: 'stranger',
-              password: 'test123'
-            }).then(response => {
-              localStorage.setItem('loggedBlogListUser', JSON.stringify(response.body))
-              cy.visit('http://localhost:3000')
+      // Create stranger's user
+      const user = {
+        username: 'stranger',
+        name: 'Stranger',
+        password: 'test123'
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/', user)
+      // Login with stranger's user
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        username: 'stranger',
+        password: 'test123'
+      }).then(response => {
+        localStorage.setItem('loggedBlogListUser', JSON.stringify(response.body))
+        cy.visit('http://localhost:3000')
 
-              // Try to delete johndoe's blog
-              cy.contains('view').click()
-              cy.contains('remove')
-                .should('have.css', 'display', 'none')
-            })
-          })
+        // Try to delete johndoe's blog
+        cy.contains('view').click()
+        cy.contains('remove')
+          .should('have.css', 'display', 'none')
+      })
+    })
+
+    it('Blogs are displayed in descending order of likes', function() {
+      // Create blog with johndoe
+      let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
+      cy.createBlog({
+        title: 'Somewhat popular',
+        author: 'My author',
+        url: 'http://example.com/',
+        likes: 60
+      })
+      cy.createBlog({
+        title: 'Less popular',
+        author: 'My author',
+        url: 'http://example.com/',
+        likes: 40
+      })
+      cy.createBlog({
+        title: 'Copycat',
+        author: 'My author',
+        url: 'http://example.com/',
+        likes: 40
+      })
+      cy.createBlog({
+        title: 'Most popular',
+        author: 'My author',
+        url: 'http://example.com/',
+        likes: 80
+      })
+
+      cy.get('.likes').then(($likes) => {
+        $likes.map((i, el) => {
+          if (i < $likes.length - 1) {
+            expect(parseInt(el.textContent)).to.be.at.least(parseInt($likes[i + 1].textContent))
+          }
+        })
       })
     })
   })
