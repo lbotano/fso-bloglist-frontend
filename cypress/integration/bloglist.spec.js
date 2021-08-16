@@ -94,5 +94,46 @@ describe('Blog app', function() {
       cy.contains('remove').click()
       cy.contains('My blog').should('not.exist')
     })
+
+    it('Blog cannot be deleted by another user', function () {
+      // Create blog with johndoe
+      let token = JSON.parse(localStorage.getItem('loggedBlogListUser')).token
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:3003/api/blogs',
+        headers: {
+          Authorization: `bearer ${token}`
+        },
+        body: {
+          title: 'My blog',
+          author: 'My author',
+          url: 'http://example.com/',
+        }
+      }).then(() => {
+
+        // Create stranger's user
+        const user = {
+          username: 'stranger',
+          name: 'Stranger',
+          password: 'test123'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', user)
+          .then(() => {
+            // Login with stranger's user
+            cy.request('POST', 'http://localhost:3003/api/login', {
+              username: 'stranger',
+              password: 'test123'
+            }).then(response => {
+              localStorage.setItem('loggedBlogListUser', JSON.stringify(response.body))
+              cy.visit('http://localhost:3000')
+
+              // Try to delete johndoe's blog
+              cy.contains('view').click()
+              cy.contains('remove')
+                .should('have.css', 'display', 'none')
+            })
+          })
+      })
+    })
   })
 })
